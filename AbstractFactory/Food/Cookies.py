@@ -1,9 +1,15 @@
-from Food import Food
+from .Food import Food
 
 class Cookies(Food):
+    __type = 'Cookies'
+    # __weight = 0
 
-    def something(self):
-        pass
+    def __init__(self, weight= 50):
+        self.__weight = weight
+
+    @property
+    def food_type(self):
+        return self.__type
 
     @property
     def weight(self):
@@ -14,4 +20,7 @@ class Cookies(Food):
         if weight >= 0:
             self.__weight = weight
         else:
-            print("Отрицательный вес невозможен")
+            print("Incorrect weight!")
+    
+    def get_info(self):
+        print(f'{self.food_type}, {self.weight} mg')

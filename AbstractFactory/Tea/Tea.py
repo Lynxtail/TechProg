@@ -8,3 +8,6 @@ class Tea(ABC):
     @abstractmethod
     def tea_type(self):
         pass
+
+    def get_info(self):
+        print(f'{self.tea_type}, {self.__volume} ml')
