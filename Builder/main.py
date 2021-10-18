@@ -22,6 +22,31 @@ class Builder(ABC):
   @abstractmethod
   def add_tea(self):
     pass
+ 
+class Barista(Builder):
+  def __init__(self):
+    self.reset()
+
+  def reset(self):
+    self._product = Product()
+
+  @property
+  def product(self):
+    product = self._product
+    self.reset()
+    return product
+
+  def add_coffee(self):
+    self._product.add('Coffee')
+  
+  def add_water(self):
+    self._product.add('Water')
+  
+  def add_milk(self):
+    self._product.add('Milk')
+
+  def add_tea(self):
+    self._product.add('Tea')
 
 class Product:
 
@@ -32,84 +57,57 @@ class Product:
     self.parts.append(part)
 
   def list_parts(self):
-    print(f"Product consits: {', '.join(self.parts)}", end='')  
+    print(f"Product consits: {', '.join(self.parts)}", end='\n')
 
-class Barista(Builder):
-  def __init__(self):
-    self.reset()
-
-  def reset(self):
-    self.product = Product()
-
-  @property
-  def product(self):
-    product = self.product
-    self.reset()
-    return product
-
-  def add_coffee(self):
-    self.product.add('Coffee')
-  
-  def add_water(self):
-    self.product.add('Water')
-  
-  def add_milk(self):
-    self.product.add('Milk')
-
-  def add_tea(self):
-    self.product.add('Tea')
-
-# class Director:
+class Director:
 
     def __init__(self):
-     self.builder = None
+     self._builder = None
 
     @property
     def builder(self):
-      return self.builder
+      return self._builder
 
     @builder.setter
     def builder(self, builder: Builder):
-      self.builder = builder
+      self._builder = builder
 
     def produce_americano(self):
-        self.builder.add_coffee()
-        self.builder.add_water()
+        self._builder.add_coffee()
+        self._builder.add_water()
 
     def produce_cappuccino(self):
-        self.builder.add_coffee()
-        self.builder.add_milk()
+        self._builder.add_coffee()
+        self._builder.add_milk()
 
     def produce_tea(self):
-        self.builder.add_tea()
-        self.builder.add_water()
+        self._builder.add_tea()
+        self._builder.add_water()
 
     def produce_tea_with_milk(self):
-        self.builder.add_tea()
-        self.builder.add_milk()
-        self.builder.add_water()
+        self._builder.add_tea()
+        self._builder.add_milk()
+        self._builder.add_water()
 
 if __name__ == "__main__":
-  # director = Director()
+  director = Director()
   builder = Barista()
-  # director.builder = builder
+  director.builder = builder
 
   #варим чай
   print("List of tea: ")
-  # director.produce_tea()
-  builder.add_tea()
-  builder.add_water()
-  builder.product.list_parts()
-  # director.produce_tea_with_milk()
-  # builder.product.list_parts()
+  director.produce_tea()
+  builder._product.list_parts()
+  builder.reset()
+  director.produce_tea_with_milk()
+  builder._product.list_parts()
 
   #варим кофе
-  print("List of coffee: ")
-  # director.produce_cappuccino()
-  builder.add_coffee()
-  builder.add_water()
-  builder.add_milk()
-  builder.product.list_parts()
-  # director.produce_americano()
-  # builder.product.list_parts()
+  print("\n\nList of coffee: ")
+  builder.reset()
+  director.produce_cappuccino()
+  builder._product.list_parts()
+  builder.reset()
+  director.produce_americano()
+  builder._product.list_parts()
 
