@@ -1,100 +1,46 @@
-class Component():
-    """
-    Базовый интерфейс Компонента определяет поведение, которое изменяется
-    декораторами.
-    """
-
-    def operation(self) -> str:
+class Product():
+    def get_info(self):
         pass
 
+class BaseProduct(Product):
+    def get_info(self):
+        return "Base model of product has been created"
 
-class ConcreteComponent(Component):
-    """
-    Конкретные Компоненты предоставляют реализации поведения по умолчанию. Может
-    быть несколько вариаций этих классов.
-    """
+class Decorator(Product):
+    _product: Product = None
 
-    def operation(self) -> str:
-        return "ConcreteComponent"
-
-
-class Decorator(Component):
-    """
-    Базовый класс Декоратора следует тому же интерфейсу, что и другие
-    компоненты. Основная цель этого класса - определить интерфейс обёртки для
-    всех конкретных декораторов. Реализация кода обёртки по умолчанию может
-    включать в себя поле для хранения завёрнутого компонента и средства его
-    инициализации.
-    """
-
-    _component: Component = None
-
-    def __init__(self, component: Component) -> None:
-        self._component = component
+    def __init__(self, product: Product):
+        self._product = product
 
     @property
-    def component(self) -> str:
-        """
-        Декоратор делегирует всю работу обёрнутому компоненту.
-        """
+    def product(self):
+        return self._product
 
-        return self._component
-
-    def operation(self) -> str:
-        return self._component.operation()
+    def get_info(self):
+        return self._product.get_info()
 
 
-class ConcreteDecoratorA(Decorator):
-    """
-    Конкретные Декораторы вызывают обёрнутый объект и изменяют его результат
-    некоторым образом.
-    """
+class DeveloperA(Decorator):
+    def get_info(self):
+        return f"{self.product.get_info()} (modified by Developer A)"
 
-    def operation(self) -> str:
-        """
-        Декораторы могут вызывать родительскую реализацию операции, вместо того,
-        чтобы вызвать обёрнутый объект напрямую. Такой подход упрощает
-        расширение классов декораторов.
-        """
-        return f"ConcreteDecoratorA({self.component.operation()})"
+class DeveloperB(Decorator):
+    def get_info(self):
+        return f"{self.product.get_info()} (modified by Developer B)"
 
-
-class ConcreteDecoratorB(Decorator):
-    """
-    Декораторы могут выполнять своё поведение до или после вызова обёрнутого
-    объекта.
-    """
-
-    def operation(self) -> str:
-        return f"ConcreteDecoratorB({self.component.operation()})"
-
-
-def client_code(component: Component) -> None:
-    """
-    Клиентский код работает со всеми объектами, используя интерфейс Компонента.
-    Таким образом, он остаётся независимым от конкретных классов компонентов, с
-    которыми работает.
-    """
-
-    # ...
-
-    print(f"RESULT: {component.operation()}", end="")
-
-    # ...
-
+def client_code(product: Product):
+    print(f"{product.get_info()}")
 
 if __name__ == "__main__":
-    # Таким образом, клиентский код может поддерживать как простые компоненты...
-    simple = ConcreteComponent()
-    print("Client: I've got a simple component:")
-    client_code(simple)
-    print("\n")
+    ordinary_prod = BaseProduct()
+    print("Base order: ")
+    client_code(ordinary_prod)
+    print()
 
-    # ...так и декорированные.
-    #
-    # Обратите внимание, что декораторы могут обёртывать не только простые
-    # компоненты, но и другие декораторы.
-    decorator1 = ConcreteDecoratorA(simple)
-    decorator2 = ConcreteDecoratorB(decorator1)
-    print("Client: Now I've got a decorated component:")
+    decorator1 = DeveloperA(ordinary_prod)
+    decorator2 = DeveloperB(ordinary_prod)
+    decorator3 = DeveloperB(decorator1)
+    print("Personal order: ")
+    client_code(decorator1)
     client_code(decorator2)
+    client_code(decorator3)
