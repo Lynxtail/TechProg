@@ -19,7 +19,6 @@ class Decorator(Product):
     def get_info(self):
         return self._product.get_info()
 
-
 class DeveloperA(Decorator):
     def get_info(self):
         return f"{self.product.get_info()} (modified by Developer A)"
