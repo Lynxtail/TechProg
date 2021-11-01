@@ -1,39 +1,46 @@
-class Target:
+class Front:
+    _msg = "TEST MESSAGE"
     def request(self) -> str:
-        return "Target: The default target's behavior."
+        return self._msg
 
 # получает на вход чистую строку
 class Back:
     _descrypt = ''
+    def __init__(self, decrypt):
+        self._descrypt = decrypt
     def specific_request(self) -> str:
         return self._descrypt
 
 # расшифровывает строку
-class Encrypter(Target, Back):
+class Encrypter(Front, Back):
+    _msg = ''
     
+    def __init__(self, msg):
+        self._msg = msg
+
+    def cipher(self, str):
+        str_ans = ''
+        for l in str:
+            if ord(l) + 3 > 90:
+                str_ans += chr(65 + 92 - ord(l))
+            if 65 <= ord(l) <= 90 or 97 <= ord(l) <= 122:
+                str_ans += chr(ord(l) + 3)
+            else:
+                str_ans += l
+        return str_ans
+
     def request(self) -> str:
-        return 
-
-
-def client_code(target: "Target") -> None:
-    """
-    Клиентский код поддерживает все классы, использующие интерфейс Target.
-    """
-
-    print(target.request(), end="")
+        return self.cipher(self._msg)
 
 
 if __name__ == "__main__":
-    print("Client: I can work just fine with the Target objects:")
-    target = Target()
-    client_code(target)
-    print("\n")
+    print("Base message:")
+    front = Front()
+    print(front.request())
 
-    adaptee = Adaptee()
-    print("Client: The Adaptee class has a weird interface. "
-          "See, I don't understand it:")
-    print(f"Adaptee: {adaptee.specific_request()}", end="\n\n")
+    encrypter = Encrypter(front.request())
 
-    print("Client: But I can work with it via the Adapter:")
-    adapter = Adapter()
-    client_code(adapter)
+    back = Back(encrypter.request())
+    print("Edited message:")
+    print(back.specific_request())
+    
