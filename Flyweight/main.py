@@ -1,100 +1,61 @@
 import json
-from typing import Dict
-
 
 class Flyweight():
-    """
-    Легковес хранит общую часть состояния (также называемую внутренним
-    состоянием), которая принадлежит нескольким реальным бизнес-объектам.
-    Легковес принимает оставшуюся часть состояния (внешнее состояние, уникальное
-    для каждого объекта) через его параметры метода.
-    """
-
-    def __init__(self, shared_state: str) -> None:
+    
+    def __init__(self, shared_state):
         self._shared_state = shared_state
 
-    def operation(self, unique_state: str) -> None:
+    def operation(self, unique_state):
         s = json.dumps(self._shared_state)
         u = json.dumps(unique_state)
-        print(f"Flyweight: Displaying shared ({s}) and unique ({u}) state.", end="")
+        print(f"Внешний вид: {s}\nИнформация: {u}")
 
 
 class FlyweightFactory():
-    """
-    Фабрика Легковесов создает объекты-Легковесы и управляет ими. Она
-    обеспечивает правильное разделение легковесов. Когда клиент запрашивает
-    легковес, фабрика либо возвращает существующий экземпляр, либо создает
-    новый, если он ещё не существует.
-    """
 
-    _flyweights: Dict[str, Flyweight] = {}
+    _flyweights = {}
 
-    def __init__(self, initial_flyweights: Dict) -> None:
+    def __init__(self, initial_flyweights):
         for state in initial_flyweights:
             self._flyweights[self.get_key(state)] = Flyweight(state)
 
-    def get_key(self, state: Dict) -> str:
-        """
-        Возвращает хеш строки Легковеса для данного состояния.
-        """
-
+    def get_key(self, state):
         return "_".join(sorted(state))
 
-    def get_flyweight(self, shared_state: Dict) -> Flyweight:
-        """
-        Возвращает существующий Легковес с заданным состоянием или создает
-        новый.
-        """
-
+    def get_flyweight(self, shared_state):
         key = self.get_key(shared_state)
 
         if not self._flyweights.get(key):
-            print("FlyweightFactory: Can't find a flyweight, creating new one.")
+            print("Нет подходящего шаблона, создаётся новый.")
             self._flyweights[key] = Flyweight(shared_state)
         else:
-            print("FlyweightFactory: Reusing existing flyweight.")
+            print("Использование существующего шаблона.")
 
         return self._flyweights[key]
 
-    def list_flyweights(self) -> None:
+    def list_flyweights(self):
         count = len(self._flyweights)
-        print(f"FlyweightFactory: I have {count} flyweights:")
+        print(f"Имеется {count} единиц:")
         print("\n".join(map(str, self._flyweights.keys())), end="")
 
 
-def add_car_to_police_database(
-    factory: FlyweightFactory, plates: str, owner: str,
-    brand: str, model: str, color: str
-) -> None:
-    print("\n\nClient: Adding a car to database.")
-    flyweight = factory.get_flyweight([brand, model, color])
-    # Клиентский код либо сохраняет, либо вычисляет внешнее состояние и передает
-    # его методам легковеса.
-    flyweight.operation([plates, owner])
+def add_book(factory, publisher, version, author, title):
+    print("\nДобавление книги в базу:")
+    flyweight = factory.get_flyweight([publisher, version])
+    flyweight.operation([author, title])
 
 
 if __name__ == "__main__":
-    """
-    Клиентский код обычно создает кучу предварительно заполненных легковесов на
-    этапе инициализации приложения.
-    """
-
-    factory = FlyweightFactory([
-        ["Chevrolet", "Camaro2018", "pink"],
-        ["Mercedes Benz", "C300", "black"],
-        ["Mercedes Benz", "C500", "red"],
-        ["BMW", "M5", "red"],
-        ["BMW", "X6", "white"],
-    ])
+    
+    factory = FlyweightFactory([ 
+        ["AST", "e-book"],
+        ["MIF", "hardcover"],
+        ["MIF", "softcover"],
+        ["Azbuka", "softcover"]])
 
     factory.list_flyweights()
 
-    add_car_to_police_database(
-        factory, "CL234IR", "James Doe", "BMW", "M5", "red")
-
-    add_car_to_police_database(
-        factory, "CL234IR", "James Doe", "BMW", "X1", "red")
-
-    print("\n")
-
+    add_book(factory, "AST", "hardcover", "G. R. R. Martin", "A Game of Thrones")
+    add_book(factory, "AST", "e-book", "J. R. R. Tolkien", "The Lord of the Rings")
+    print()
     factory.list_flyweights()
