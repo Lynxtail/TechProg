@@ -1,25 +1,38 @@
-class Singleton(type):
-    _instances = {}
+class DataBase:
+    _instance = None
+    _data = {}
+    
+    def get_instance(self):
+        if self._instance == None:
+            self._instance = DataBase()
+        return self._instance
+    
+    @property
+    def data(self):
+        return self._data
+    
+    @data.setter
+    def data(self, str):
+        self._data[len(self._data)] = str
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            instance = super().__call__(*args, **kwargs)
-            cls._instances[cls] = instance
-        return cls._instances[cls]
-
-
-class SingletonClass(metaclass=Singleton):
-    def function():
-        pass
-
+def output(dict):
+    for key, item in dict.items():
+        print(f'{key}: {item}')
 
 if __name__ == "__main__":
-    # Клиентский код.
+    DB = DataBase()
+    DB1 = DB.get_instance()
+    DB1.data = "Object 0; description of object 0; author of object 0."
+    DB1.data = "Object 1; description of object 1; author of object 1."
+    DB1.data = "Object 2; description of object 2; author of object 2."
+    DB1.data = "Object 3; description of object 3; author of object 3."    
 
-    s1 = Singleton()
-    s2 = Singleton()
-
-    if id(s1) == id(s2):
-        print("Singleton works, both variables contain the same instance.")
+    DB2 = DB.get_instance()
+    DB2.data = "Object 5; description of object 5; author of object 5."
+    
+    if id(DB1) == id(DB2):
+        print("Success! Data Base has only one instance")
     else:
-        print("Singleton failed, variables contain different instances.")
+        print("Failture! Data Base has several instances.")
+    
+    output(DB1.data)
